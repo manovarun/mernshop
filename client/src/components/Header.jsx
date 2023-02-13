@@ -12,7 +12,7 @@ const Header = () => {
 
   const cartQty =
     cartItems.length > 0
-      ? cartItems.reduce((acc, item) => acc + item.quantity, 0)
+      ? cartItems.reduce((acc, item) => acc + item.qty, 0)
       : 0;
 
   const logoutHandler = () => {

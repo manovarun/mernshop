@@ -1,23 +1,29 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import FormContainer from '../components/FormContainer';
 import { addShippingAddress } from '../features/Cart/CartSlice';
+import CheckoutSteps from '../components/CheckoutSteps';
 
 const Shipping = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { shippingAddress } = useSelector((state) => state.Cart);
 
-  const [address, setAddress] = useState(shippingAddress.address);
-  const [city, setCity] = useState(shippingAddress.city);
-  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode);
-  const [country, setCountry] = useState(shippingAddress.country);
+  const [address, setAddress] = useState(shippingAddress.address || '');
+  const [city, setCity] = useState(shippingAddress.city || '');
+  const [postalCode, setPostalCode] = useState(
+    shippingAddress.postalCode || ''
+  );
+  const [country, setCountry] = useState(shippingAddress.country || '');
 
   const submitHandler = (e) => {
     e.preventDefault();
     if (address && city && postalCode && country) {
       dispatch(addShippingAddress({ address, city, postalCode, country }));
+      navigate('/payment');
     } else {
       toast.error('Enter shipping all details');
     }
@@ -25,6 +31,7 @@ const Shipping = () => {
 
   return (
     <FormContainer>
+      <CheckoutSteps step1 step2 />
       <h1>Shipping</h1>
       <Form onSubmit={submitHandler}>
         <Form.Group className='mb-3' controlId='address'>
@@ -63,7 +70,6 @@ const Shipping = () => {
             onChange={(e) => setCountry(e.target.value)}
           ></Form.Control>
         </Form.Group>
-
         <Button type='submit' variant='primary'>
           Continue
         </Button>

@@ -125,7 +125,18 @@ const Product = () => {
                       type='button'
                       disabled={product.countInStock === 0}
                       onClick={() => {
-                        dispatch(addToCart({ product, qty }));
+                        dispatch(
+                          addToCart({
+                            product: {
+                              product: product._id,
+                              name: product.name,
+                              image: product.image,
+                              price: product.price,
+                              countInStock: product.countInStock,
+                              qty,
+                            },
+                          })
+                        );
                         navigate('/cart');
                       }}
                     >

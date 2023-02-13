@@ -8,6 +8,7 @@ const colors = require('colors');
 const GlobalErrorHandler = require('./controllers/ErrorController');
 const userRouter = require('./routes/userRoutes');
 const productRouter = require('./routes/productRoutes');
+const orderRouter = require('./routes/orderRoutes');
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
+app.use('/api/orders', orderRouter);
 
 app.use(GlobalErrorHandler);
 

@@ -26,12 +26,12 @@ const Cart = () => {
 
   const cartQty =
     cartItems.length > 0
-      ? cartItems.reduce((acc, item) => acc + item.quantity, 0)
+      ? cartItems.reduce((acc, item) => acc + item.qty, 0)
       : 0;
 
   const cartAmnt =
     cartItems.length > 0
-      ? cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0)
+      ? cartItems.reduce((acc, item) => acc + item.qty * item.price, 0)
       : 0;
 
   const checkoutHandler = () => {
@@ -84,7 +84,7 @@ const Cart = () => {
                         />
                       </td>
                       <td>
-                        <Link to={`/product/${item._id}`}>{item.name}</Link>
+                        <Link to={`/product/${item.product}`}>{item.name}</Link>
                       </td>
                       <td>${item.price}</td>
                       <td>
@@ -92,16 +92,16 @@ const Cart = () => {
                           <Button
                             variant='link'
                             onClick={() =>
-                              dispatch(decrementQuantity(item._id))
+                              dispatch(decrementQuantity(item.product))
                             }
                           >
                             <FaMinusCircle size={24} />
                           </Button>
-                          {item.quantity}
+                          {item.qty}
                           <Button
                             variant='link'
                             onClick={() =>
-                              dispatch(incrementQuantity(item._id))
+                              dispatch(incrementQuantity(item.product))
                             }
                           >
                             <FaPlusCircle size={24} />
@@ -109,15 +109,13 @@ const Cart = () => {
                         </div>
                       </td>
                       <td>
-                        <Col md={2}>
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </Col>
+                        <Col md={2}>${(item.price * item.qty).toFixed(2)}</Col>
                       </td>
                       <td>
                         <Button
                           type='button'
                           variant='light'
-                          onClick={() => dispatch(removeCartItem(item._id))}
+                          onClick={() => dispatch(removeCartItem(item.product))}
                         >
                           <FaTrashAlt size={20} />
                         </Button>

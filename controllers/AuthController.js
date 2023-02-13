@@ -1,4 +1,3 @@
-const expressAsyncHandler = require('express-async-handler');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
 const AppError = require('../utils/AppError');
@@ -29,7 +28,7 @@ exports.register = asyncHandler(async (req, res, next) => {
   res.status(201).json({ status: 'success', user, token });
 });
 
-exports.login = expressAsyncHandler(async (req, res, next) => {
+exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {

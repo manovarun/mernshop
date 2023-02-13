@@ -4,6 +4,7 @@ import AuthReducer from '../features/Auth/AuthSlice';
 import ProductReducer from '../features/Product/ProductSlice';
 import CartReducer from '../features/Cart/CartSlice';
 import UserReducer from '../features/User/UserSlice';
+import OrderReducer from '../features/Order/OrderSlice';
 
 import {
   persistStore,
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   Product: ProductReducer,
   Cart: CartReducer,
   User: UserReducer,
+  Order: OrderReducer,
 });
 
 let PersistedReducer = persistReducer(persistConfig, rootReducer);
