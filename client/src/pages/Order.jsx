@@ -1,18 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { getOrderDetails } from '../features/Order/OrderSlice';
+import { getOrderDetails, payOrder } from '../features/Order/OrderSlice';
 import { useParams, Link } from 'react-router-dom';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap';
 import { FaCreditCard } from 'react-icons/fa';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
 const Order = () => {
   const {
     isLoading,
     orderDetails: order,
     message,
+    isSuccess,
+    isSuccessPay,
   } = useSelector((state) => state.Order);
+
+  const [clientId, setClientId] = useState('');
 
   const dispatch = useDispatch();
   const params = useParams();
@@ -22,13 +28,62 @@ const Order = () => {
 
   useEffect(() => {
     if (!order || order._id !== orderId) {
-      dispatch(getOrderDetails(orderId));
-    }
-  }, [dispatch, order, orderId]);
+      if (!isSuccessPay) {
+        dispatch(getOrderDetails(orderId));
+      }
+    } else {
+      const getClientID = async () => {
+        const { data } = await axios.get(`/api/config/paypal`);
+        setClientId(data);
+      };
 
-  const paymentHandler = () => {};
+      getClientID();
+    }
+  }, [dispatch, order, orderId, isSuccessPay]);
+
+  const paymentHandler = () => {
+    const paymentResult = {
+      id: order._id,
+      status: isSuccess,
+      update_time: new Date().toString(),
+      email_address: order.user.email,
+    };
+    dispatch(payOrder({ orderId, paymentResult }));
+  };
 
   const deliverHandler = () => {};
+
+  const createOrder = (data, actions) => {
+    return actions.order
+      .create({
+        purchase_units: [
+          {
+            description: 'MernShop',
+            amount: {
+              currency_code: 'USD',
+              value: order.totalPrice,
+            },
+          },
+        ],
+      })
+      .then((orderID) => {
+        return orderID;
+      });
+  };
+
+  const onApprove = (data, actions) => {
+    return actions.order.capture().then(function (details) {
+      const { id, update_time, status, payer } = details;
+
+      const paymentResult = {
+        id,
+        status: status,
+        update_time: update_time,
+        email_address: payer.email_address,
+      };
+      dispatch(payOrder({ orderId, paymentResult }));
+    });
+  };
 
   return (
     <>
@@ -75,7 +130,9 @@ const Order = () => {
                       {order.paymentMethod}
                     </p>
                     {order.isPaid ? (
-                      <Message variant='success'>Order paid</Message>
+                      <Message variant='success'>
+                        Paid on {order.paidAt}
+                      </Message>
                     ) : (
                       <Message variant='danger'>Order not paid</Message>
                     )}
@@ -145,6 +202,19 @@ const Order = () => {
                       </Row>
                     </ListGroup.Item>
                     <ListGroup.Item>
+                      {clientId && !order.isPaid && (
+                        <PayPalScriptProvider
+                          options={{ 'client-id': clientId }}
+                        >
+                          <PayPalButtons
+                            style={{ layout: 'vertical' }}
+                            createOrder={createOrder}
+                            onApprove={onApprove}
+                          />
+                        </PayPalScriptProvider>
+                      )}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
                       <div className='d-grid'>
                         <Button
                           variant='info'
@@ -152,7 +222,7 @@ const Order = () => {
                           onClick={() => paymentHandler()}
                         >
                           <FaCreditCard className='me-2 ' />
-                          PayPal
+                          Mark as Paid
                         </Button>
                       </div>
                     </ListGroup.Item>

@@ -28,6 +28,36 @@ export const getOrderDetails = async (token, orderId) => {
   return response.data;
 };
 
-const OrderService = { createOrder, getOrderDetails };
+export const payOrder = async (token, { orderId, paymentResult }) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await axios.put(
+    `${API_URL}/${orderId}/pay`,
+    paymentResult,
+    config
+  );
+
+  return response.data;
+};
+
+export const getMyOrders = async (token) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await axios.get(`${API_URL}/myorders`, config);
+
+  return response.data;
+};
+
+const OrderService = { createOrder, getOrderDetails, payOrder, getMyOrders };
 
 export default OrderService;

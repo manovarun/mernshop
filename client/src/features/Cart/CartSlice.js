@@ -10,7 +10,7 @@ export const CartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    reset: () => initialState,
+    cartReset: () => initialState,
     addToCart: (state, action) => {
       const { product } = action.payload;
       const itemInCart = state.cartItems.find(
@@ -61,6 +61,7 @@ export const {
   removeCartItem,
   addShippingAddress,
   addPaymentMethod,
+  cartReset,
 } = CartSlice.actions;
 
 export default CartSlice.reducer;

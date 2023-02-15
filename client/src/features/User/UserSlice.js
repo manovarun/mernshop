@@ -3,6 +3,7 @@ import UserService from './UserService';
 
 const initialState = {
   user: null,
+  users: [],
   isError: false,
   isSuccess: false,
   isUpdated: false,
@@ -13,7 +14,7 @@ const initialState = {
 
 //Get User Profile
 export const getUserProfile = createAsyncThunk(
-  'auth/getProfile',
+  'user/getProfile',
   async (_, thunkAPI) => {
     try {
       const token = thunkAPI.getState().Auth.token;
@@ -30,8 +31,9 @@ export const getUserProfile = createAsyncThunk(
   }
 );
 
+//Get User Profile Update
 export const updateUserProfile = createAsyncThunk(
-  'auth/updateProfile',
+  'user/updateProfile',
   async (user, thunkAPI) => {
     try {
       const token = thunkAPI.getState().Auth.token;
@@ -48,12 +50,32 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
+//Get All Users
+export const getUsers = createAsyncThunk(
+  'user/getUsers',
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().Auth.token;
+      return await UserService.getUsers(token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const UserSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    reset: (state) => {
+    userReset: (state) => {
       state.user = null;
+      state.users = [];
       state.isLoading = false;
       state.isError = false;
       state.isSuccess = false;
@@ -97,10 +119,28 @@ export const UserSlice = createSlice({
         state.isUpdated = false;
         state.message = action.payload;
         state.user = null;
+      })
+      .addCase(getUsers.pending, (state) => {
+        state.isLoading = true;
+        state.isSuccess = false;
+        state.isUpdated = false;
+      })
+      .addCase(getUsers.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.isUpdated = true;
+        state.users = action.payload.users;
+      })
+      .addCase(getUsers.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = false;
+        state.isUpdated = false;
+        state.message = action.payload;
+        state.users = [];
       });
   },
 });
 
-export const { reset } = UserSlice.actions;
+export const { userReset } = UserSlice.actions;
 
 export default UserSlice.reducer;

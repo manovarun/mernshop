@@ -16,6 +16,8 @@ import Payment from './pages/Payment';
 import PrivateRoute from './components/PrivateRoute';
 import PlaceOrder from './pages/PlaceOrder';
 import Order from './pages/Order';
+import AdminRoute from './components/AdminRoute';
+import UserList from './pages/UserList';
 
 const App = () => {
   return (
@@ -44,6 +46,9 @@ const App = () => {
               </Route>
               <Route path='/orders/:id' element={<PrivateRoute />}>
                 <Route path='/orders/:id' element={<Order />}></Route>
+              </Route>
+              <Route path='/users' element={<AdminRoute />}>
+                <Route path='/users' element={<UserList />}></Route>
               </Route>
             </Routes>
           </Container>

@@ -3,6 +3,10 @@ const User = require('../models/User');
 const AppError = require('../utils/AppError');
 
 exports.createUser = asyncHandler(async (req, res, next) => {
+  if (!req.user) {
+    return next(new AppError('User not authorized', 400));
+  }
+
   const user = await User.create({ ...req.body });
 
   if (!user) {

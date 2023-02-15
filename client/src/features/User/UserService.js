@@ -27,6 +27,19 @@ const updateUserProfile = async (token, user) => {
   return response.data;
 };
 
-const UserService = { getUserProfile, updateUserProfile };
+const getUsers = async (token) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  const response = await axios.get(`${API_URL}`, config);
+
+  return response.data;
+};
+
+const UserService = { getUserProfile, updateUserProfile, getUsers };
 
 export default UserService;

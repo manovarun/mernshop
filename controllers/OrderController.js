@@ -61,10 +61,21 @@ exports.updateOrderToPaid = asyncHandler(async (req, res, next) => {
     id: req.body.id,
     status: req.body.status,
     update_time: req.body.update_time,
-    email_address: req.body.payer.email_address,
+    // email_address: req.body.payer.email_address,
+    email_address: req.body.email_address,
   };
 
   order = await order.save();
 
   res.status(200).json({ status: 'success', order });
+});
+
+exports.getMyOrders = asyncHandler(async (req, res, next) => {
+  let orders = await Order.find({ user: req.user._id });
+
+  if (!orders) {
+    return next(new AppError('Orders not found', 404));
+  }
+
+  res.status(200).json({ status: 'success', orders });
 });

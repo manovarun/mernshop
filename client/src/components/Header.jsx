@@ -4,6 +4,9 @@ import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import { FaShoppingCart, FaSignInAlt } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { reset } from '../features/Auth/AuthSlice';
+import { orderReset } from '../features/Order/OrderSlice';
+import { cartReset } from '../features/Cart/CartSlice';
+import { userReset } from '../features/User/UserSlice';
 
 const Header = () => {
   const { cartItems } = useSelector((state) => state.Cart);
@@ -17,6 +20,9 @@ const Header = () => {
 
   const logoutHandler = () => {
     dispatch(reset());
+    dispatch(orderReset());
+    dispatch(cartReset());
+    dispatch(userReset());
   };
 
   return (
