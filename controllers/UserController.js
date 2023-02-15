@@ -57,3 +57,15 @@ exports.updateUserProfile = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ status: 'success', user });
 });
+
+exports.deleteUser = asyncHandler(async (req, res, next) => {
+  let user = await User.findById(req.user._id);
+
+  if (!user || !user.isAdmin) {
+    return next(new AppError('User not authorized', 401));
+  }
+
+  await User.findByIdAndDelete(req.params.id);
+
+  res.status(202).json({ status: 'succes', message: 'User deleted' });
+});
